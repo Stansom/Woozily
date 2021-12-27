@@ -2,41 +2,50 @@
   <div class="filter_menu" [class.invisible]="!isVisible">
     <div class="filter_menu__box">
       <div class="filter_menu__header_box">
-        <h5>FILTER</h5>
+        <h4 class="has-text-centered">FILTER</h4>
       </div>
       <div class="filter_menu__items">
         <ul>
-          <li>AVAILABLE (click)="filter = 'availability'"</li>
-          <li (click)="filter = 'charge'">CHARGE</li>
+          <li (click)="filter = 'all'">ALL</li>
+          <li (click)="filter = 'availability'">AVAILABLE</li>
+          <li (click)="filter = 'charge'">CHARGING</li>
           <!-- <li>DISTANCE</li> -->
         </ul>
       </div>
-      <div class="filter_menu__charge_slider_container">
+      <div
+        *ngIf="filter === 'charge'"
+        class="filter_menu__charge_slider_container"
+      >
+        <label for="charge_selector">sort by minimum charging: </label>
         <div class="filter_menu__slider">
           <!-- <div "></div> -->
           <input
             class="slider__box"
             type="range"
-            name=""
-            id=""
-            max="100"
+            name="charge_selector"
+            id="charge_selector"
+            max="99"
             min="0"
+            aria-label="input slider for charging value"
           />
           <div class="slider__button" id="slider__button1"></div>
-          <div class="slider__button" id="slider__button2"></div>
         </div>
         <div class="filter_menu__slider_text">
-          <h6>0%</h6>
-          <h6>100%</h6>
+          <h3>0%</h3>
+          <h3>100%</h3>
         </div>
       </div>
     </div>
   </div>
   <button
+    aria-label="opening filter menu"
     (click)="toggleVisibility()"
     class="filter_menu__open_button"
     [class.closed]="!isVisible"
   >
-    <img src="assets/images/button_icon.svg" />
+    <img
+      src="assets/images/button_icon.svg"
+      alt="button to open a filter menu"
+    />
   </button>
 </div>

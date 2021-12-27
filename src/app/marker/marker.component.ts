@@ -54,6 +54,37 @@ export class MarkerComponent implements OnInit {
   parkingMarkers: google.maps.Marker[] = [];
   marker?: google.maps.Marker;
 
+  iconVehicle: google.maps.Symbol = {
+    path: Icons.vehicleIcon,
+    fillColor: this._object
+      ? 'type' in this._object
+        ? this._object?.status === 'AVAILABLE'
+          ? 'green'
+          : 'red'
+        : 'black'
+      : 'black',
+    fillOpacity: 0.6,
+    strokeWeight: 0,
+    rotation: 0,
+    scale: 0.08,
+  };
+  iconParking: google.maps.Symbol = {
+    path: Icons.parkingIcon,
+    strokeColor: 'black',
+    fillOpacity: 0.6,
+    strokeWeight: 0,
+    rotation: 0,
+    scale: 0.6,
+  };
+  iconPoi: google.maps.Symbol = {
+    path: Icons.poiIcon,
+    strokeColor: 'black',
+    fillOpacity: 0.6,
+    strokeWeight: 0,
+    rotation: 0,
+    scale: 0.6,
+  };
+
   constructor(
     private mapService: MapService,
     private infoWindowService: InfoWindowService,
@@ -114,7 +145,15 @@ export class MarkerComponent implements OnInit {
       position:
         new google.maps.LatLng(position.latitude, position.longitude) ||
         this._position,
-      icon: this._icon,
+      icon: this._object
+        ? this._object.discriminator === 'vehicle'
+          ? this.iconVehicle
+          : this._object.discriminator === 'parking'
+          ? this.iconParking
+          : this._object.discriminator === 'poi'
+          ? this.iconPoi
+          : null
+        : null,
       map: this.map,
     });
     this.markersService.addMarker(this.marker);
@@ -122,12 +161,16 @@ export class MarkerComponent implements OnInit {
 
   createInfoWindow(object: Vehicle | Parking | Poi, info?: string): void {
     const isAvailable =
-      'type' in object ? (object.status === 'AVAILABLE' ? true : false) : false;
+      'status' in object
+        ? object.status === 'AVAILABLE'
+          ? true
+          : false
+        : false;
     const infoContent =
       'type' in object
         ? `
       <div class="${this._name}_bubble">
-        <h4 class="has-text-centered">${object.type}</h4>
+        <h4 class="title is-6 has-text-centered">${object.type}</h4>
         <p>Plates number: ${object.platesNumber}</p>
         <p>Car color: ${object.color}</p>
         <p>Range: ${object.rangeKm}</p>
@@ -146,7 +189,8 @@ export class MarkerComponent implements OnInit {
   `
         : `
     <div class="${this._name}_bubble">
-        <h4 class="has-text-centered">Parking: ${object.name}</h4>
+        <h4 class="title is-6 has-text-centered">Parking:</h4>
+        <h5 class="subtitle is-6 has-text-centered"> ${object.name}</h5>
       </div>
     `;
 

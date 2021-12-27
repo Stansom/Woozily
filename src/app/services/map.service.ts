@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Loader } from '@googlemaps/js-api-loader';
-import { LoggerService } from '../logger.service';
+import { LoggerService } from '../services/logger.service';
 
 const API_KEY = 'AIzaSyAts9Xbep-5hDLqzkNe8hKCEJANLX47E8c';
 const CENTER = { lat: 51.1079, lng: 17.0385 };

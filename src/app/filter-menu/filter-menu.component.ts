@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class FilterMenuComponent implements OnInit {
   isVisible: boolean = true;
   chargeButtonClicked: boolean = false;
-  filter: 'default' | 'charge' | 'availability' = 'default';
+  filter: 'all' | 'charge' | 'availability' = 'all';
 
   constructor() {}
 

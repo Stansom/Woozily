@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { LoggerService } from '../logger.service';
 import { ApiOptions, Parking, Poi, Vehicle } from '../types';
 import { DataFetchingService } from './data-fetching.service';
+import { LoggerService } from '../services/logger.service';
 
 @Injectable({
   providedIn: 'root',

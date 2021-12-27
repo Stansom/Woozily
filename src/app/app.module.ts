@@ -4,14 +4,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { MapsComponent } from './maps/maps.component';
-import { WaveComponent } from './wave/wave.component';
+// import { WaveComponent } from './wave/wave.component';
 import { MarkerComponent } from './marker/marker.component';
 import { FilterMenuComponent } from './filter-menu/filter-menu.component';
 @NgModule({
   declarations: [
     AppComponent,
     MapsComponent,
-    WaveComponent,
+    // WaveComponent,
     MarkerComponent,
     FilterMenuComponent,
   ],

@@ -14,7 +14,7 @@ import * as Icons from '../iconsFromPaths';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { MarkerComponent } from '../marker/marker.component';
 import { MarkersService } from '../services/markers.service';
-import { LoggerService } from '../logger.service';
+import { LoggerService } from '../services/logger.service';
 
 @Component({
   selector: 'app-maps',
@@ -22,6 +22,7 @@ import { LoggerService } from '../logger.service';
   styleUrls: ['./maps.component.css'],
 })
 export class MapsComponent implements OnInit {
+  appTitle: string = 'Wozimy';
   centerOfMap = { lat: 52.1935161702226, lng: 20.9304286193486 };
   tempObject: Vehicle = {
     discriminator: 'vehicle',
@@ -55,31 +56,6 @@ export class MapsComponent implements OnInit {
   allMarkers: google.maps.Marker[] = [];
   markerClusterer?: MarkerClusterer;
 
-  iconVehicle: google.maps.Symbol = {
-    path: Icons.vehicleIcon,
-    fillColor: this.tempObject.status === 'AVAILABLE' ? 'green' : 'red',
-    fillOpacity: 0.6,
-    strokeWeight: 0,
-    rotation: 0,
-    scale: 0.08,
-  };
-  iconParking: google.maps.Symbol = {
-    path: Icons.parkingIcon,
-    strokeColor: 'black',
-    fillOpacity: 0.6,
-    strokeWeight: 0,
-    rotation: 0,
-    scale: 0.6,
-  };
-  iconPoi: google.maps.Symbol = {
-    path: Icons.poiIcon,
-    strokeColor: 'black',
-    fillOpacity: 0.6,
-    strokeWeight: 0,
-    rotation: 0,
-    scale: 0.6,
-  };
-
   constructor(
     private dataFetchingService: DataFetchingService,
     private mapService: MapService,
@@ -90,7 +66,6 @@ export class MapsComponent implements OnInit {
   ngOnInit(): void {
     this.mapService.createMap().then(() => {
       this.setLocations();
-      // this.logger.log('init the map');
       this.map = this.mapService.getMap();
 
       if (!this.markerClusterer) {
@@ -102,7 +77,6 @@ export class MapsComponent implements OnInit {
       }
     });
   }
-
 
   ngAfterViewChecked(): void {
     if (this.allMarkers.length === 0) {

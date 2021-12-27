@@ -5,12 +5,20 @@
 
 @import "../node_modules/bulma/css/bulma.css";
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   padding: 0;
   margin: 0;
+  /* margin-top: 35px; */
   height: 100vh !important;
   width: 100vw !important;
   box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 
 .vehicle_bubble > p {
