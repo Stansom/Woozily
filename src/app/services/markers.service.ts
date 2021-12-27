@@ -44,11 +44,10 @@ export class MarkersService {
   // }
 
   getMarkers(): google.maps.Marker[] {
-    // this.logger.log(`${this._name} getting markers ${this.markers}`);
-    // if (!!this.markers) {
-    //   this.logger.error(`${this._name} can't get markers`);
-    //   return [];
-    // }
     return this.markers;
+  }
+
+  clearMarkers(): void {
+    this.markers = [];
   }
 }

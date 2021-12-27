@@ -5,34 +5,39 @@
         <h4 class="has-text-centered">FILTER</h4>
       </div>
       <div class="filter_menu__items">
-        <ul>
-          <li (click)="filter = 'all'">ALL</li>
-          <li (click)="filter = 'availability'">AVAILABLE</li>
-          <li (click)="filter = 'charge'">CHARGING</li>
-          <!-- <li>DISTANCE</li> -->
+        <ul class="filter_menu__objects_list">
+          <li (click)="objectsFilter = 'all'">ALL</li>
+          <li (click)="objectsFilter = 'vehicles'">VEHICLES</li>
+          <li (click)="objectsFilter = 'parking'">PARKINGS</li>
+          <li (click)="objectsFilter = 'info'">INFO</li>
         </ul>
-      </div>
-      <div
-        *ngIf="filter === 'charge'"
-        class="filter_menu__charge_slider_container"
-      >
-        <label for="charge_selector">sort by minimum charging: </label>
-        <div class="filter_menu__slider">
-          <!-- <div "></div> -->
-          <input
-            class="slider__box"
-            type="range"
-            name="charge_selector"
-            id="charge_selector"
-            max="99"
-            min="0"
-            aria-label="input slider for charging value"
-          />
-          <div class="slider__button" id="slider__button1"></div>
-        </div>
-        <div class="filter_menu__slider_text">
-          <h3>0%</h3>
-          <h3>100%</h3>
+        <ul *ngIf="objectsFilter === 'vehicles'" class="filter_menu__filters">
+          <li (click)="filter = 'all'">all</li>
+          <li (click)="filter = 'availability'">available</li>
+          <li (click)="filter = 'charge'">charging</li>
+        </ul>
+        <div
+          *ngIf="filter === 'charge' && objectsFilter === 'vehicles'"
+          class="filter_menu__charge_slider_container"
+        >
+          <label for="charge_selector">sort by minimum charging: </label>
+          <div class="filter_menu__slider">
+            <!-- <div "></div> -->
+            <input
+              class="slider__box"
+              type="range"
+              name="charge_selector"
+              id="charge_selector"
+              max="99"
+              min="0"
+              aria-label="input slider for charging value"
+            />
+            <div class="slider__button" id="slider__button1"></div>
+          </div>
+          <div class="filter_menu__slider_text">
+            <h3>0%</h3>
+            <h3>100%</h3>
+          </div>
         </div>
       </div>
     </div>

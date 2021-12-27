@@ -12,22 +12,29 @@
   #appMarkerRef
 >
 </app-marker>-->
-  <!-- <app-marker
-  *ngFor="let parking of parkings"
-  class="marker"
-  [object]="parking"
-  name="parking"
-  #appMarkerRef
->
-</app-marker>
-<app-marker
-  *ngFor="let poi of pois"
-  class="marker"
-  [object]="poi"
-  name="poi"
-  #appMarkerRef
->
-</app-marker> -->
+  <div *ngIf="filterMenu.objectsFilter === 'parking'" class="parking_marker">
+    <app-marker
+      *ngFor="let parking of parkings"
+      class="marker"
+      [object]="parking"
+      name="parking"
+      #appMarkerRef
+    >
+    </app-marker>
+  </div>
+  <div *ngIf="filterMenu.objectsFilter === 'info'" class="poi_marker">
+    <app-marker
+      *ngFor="let poi of pois"
+      class="marker"
+      [object]="poi"
+      name="poi"
+      #appMarkerRef
+    >
+    </app-marker>
+  </div>
 
-  <app-filter-menu></app-filter-menu>
+  <app-filter-menu
+    #filterMenu
+    (click)="handleFilters(filterMenu.objectsFilter)"
+  ></app-filter-menu>
 </div>

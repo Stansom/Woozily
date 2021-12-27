@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-filter-menu',
@@ -8,7 +8,10 @@ import { Component, OnInit } from '@angular/core';
 export class FilterMenuComponent implements OnInit {
   isVisible: boolean = true;
   chargeButtonClicked: boolean = false;
+  objectsFilter: 'all' | 'vehicles' | 'parking' | 'info' = 'all';
   filter: 'all' | 'charge' | 'availability' = 'all';
+
+  @Output() allObjects = new EventEmitter();
 
   constructor() {}
 

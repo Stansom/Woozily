@@ -79,14 +79,14 @@ export class MapsComponent implements OnInit {
   }
 
   ngAfterViewChecked(): void {
-    if (this.allMarkers.length === 0) {
-      this.allMarkers = this.markersService.getMarkers();
-      console.log(this.allMarkers.length);
+    if (this.allMarkers.length > 0) {
+      return;
     }
-    this.pushMarkers();
+    this.allMarkers = this.markersService.getMarkers();
+    this.makeCluster();
   }
 
-  pushMarkers(): void {
+  makeCluster(): void {
     if (this.map) {
       this.markerClusterer?.addMarkers(this.allMarkers);
     }
@@ -105,5 +105,25 @@ export class MapsComponent implements OnInit {
       const unpackedData = data.objects;
       this.pois = unpackedData;
     });
+  }
+
+  handleFilters(event: string) {
+    if (event.length > 0) {
+      const tempVehicles = this.vehicles;
+      const tempParkings = this.parkings;
+      const tempPois = this.pois;
+
+      switch (event) {
+        case 'all':
+          break;
+        case 'vehicles':
+          
+          break;
+
+        default:
+          this.logger.log('no event to handle');
+      }
+      console.log(event);
+    }
   }
 }
