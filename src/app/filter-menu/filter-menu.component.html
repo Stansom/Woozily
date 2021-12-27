@@ -1,0 +1,42 @@
+<div class="wrapper">
+  <div class="filter_menu" [class.invisible]="!isVisible">
+    <div class="filter_menu__box">
+      <div class="filter_menu__header_box">
+        <h5>FILTER</h5>
+      </div>
+      <div class="filter_menu__items">
+        <ul>
+          <li>AVAILABLE (click)="filter = 'availability'"</li>
+          <li (click)="filter = 'charge'">CHARGE</li>
+          <!-- <li>DISTANCE</li> -->
+        </ul>
+      </div>
+      <div class="filter_menu__charge_slider_container">
+        <div class="filter_menu__slider">
+          <!-- <div "></div> -->
+          <input
+            class="slider__box"
+            type="range"
+            name=""
+            id=""
+            max="100"
+            min="0"
+          />
+          <div class="slider__button" id="slider__button1"></div>
+          <div class="slider__button" id="slider__button2"></div>
+        </div>
+        <div class="filter_menu__slider_text">
+          <h6>0%</h6>
+          <h6>100%</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    (click)="toggleVisibility()"
+    class="filter_menu__open_button"
+    [class.closed]="!isVisible"
+  >
+    <img src="assets/images/button_icon.svg" />
+  </button>
+</div>
