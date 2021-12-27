@@ -103,11 +103,6 @@ export class MapsComponent implements OnInit {
     });
   }
 
-  // ngAfterViewChecked(): void {
-  //   if (this.map && this.allMarkers.length) {
-  //     this.markerClusterer?.addMarkers(this.allMarkers);
-  //   }
-  // }
 
   ngAfterViewChecked(): void {
     if (this.allMarkers.length === 0) {
@@ -123,19 +118,6 @@ export class MapsComponent implements OnInit {
     }
   }
 
-  // clusterMarkers() {
-  //   const map = this.map;
-  //   const markers = this.markersService.getMarkers();
-  //   const markerCluster = new MarkerClusterer({ map, markers });
-  // }
-
-  // getData() {
-  // this.dataFetchingService.getVehicles().subscribe((data: any) => {
-  //   this.vehicles = data.objects;
-  //   console.log(this.vehicles);
-  // });
-  // }
-
   setLocations() {
     this.dataFetchingService.getVehicles().subscribe((data: any) => {
       const unpackedData = data.objects;
@@ -149,9 +131,5 @@ export class MapsComponent implements OnInit {
       const unpackedData = data.objects;
       this.pois = unpackedData;
     });
-    // this.objects = this.dataFetchingService.getData();
-    // this.vehicles = this.objects[0] as Vehicle[];
-    // console.log(this.objects);
-    // console.log(this.vehicles);
   }
 }
