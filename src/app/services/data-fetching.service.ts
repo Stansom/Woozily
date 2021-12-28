@@ -134,7 +134,7 @@ export class DataFetchingService {
     return this.http.get<Vehicle[]>(`${this.url}${ApiOptions.VEHICLE}`).pipe(
       tap((_) => console.log('fetching data vehicles  from API')),
       catchError((error) => {
-        console.error('Error while fetching data from API', error);
+        console.error('Error while fetching vehicles data from API', error);
         throw Error("Can't get data from API");
       })
     );
@@ -144,7 +144,7 @@ export class DataFetchingService {
     return this.http.get<Parking[]>(`${this.url}${ApiOptions.PARKING}`).pipe(
       tap((_) => console.log('fetching data parkings from API')),
       catchError((error) => {
-        console.error('Error while fetching data from API', error);
+        console.error('Error while fetching parkings data from API', error);
         throw Error("Can't get data from API");
       })
     );
@@ -154,7 +154,17 @@ export class DataFetchingService {
     return this.http.get<Poi[]>(`${this.url}${ApiOptions.POI}`).pipe(
       tap((_) => console.log('fetching data pois from API')),
       catchError((error) => {
-        console.error('Error while fetching data from API', error);
+        console.error('Error while fetching pois data from API', error);
+        throw Error("Can't get data from API");
+      })
+    );
+  }
+
+  sortByRange(range: number) {
+    return this.http.get<Vehicle[]>(`${this.url}${ApiOptions.VEHICLE}`).pipe(
+      // tap((_) => console.log('fetching data vehicles from API')),
+      catchError((error) => {
+        console.error('Error while sorting vehicles by range', error);
         throw Error("Can't get data from API");
       })
     );

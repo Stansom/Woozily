@@ -23,7 +23,7 @@ type IconType =
   | undefined;
 
 @Component({
-  selector: 'app-marker',
+  selector: 'app-marker[object]',
   templateUrl: './marker.component.html',
   styleUrls: ['./marker.component.css'],
 })
@@ -54,91 +54,51 @@ export class MarkerComponent implements OnInit {
   parkingMarkers: google.maps.Marker[] = [];
   marker?: google.maps.Marker;
 
-  iconVehicle: google.maps.Symbol = {
-    path: Icons.vehicleIcon,
-    fillColor: this._object
-      ? 'type' in this._object
-        ? this._object?.status === 'AVAILABLE'
-          ? 'green'
-          : 'red'
-        : 'black'
-      : 'black',
-    fillOpacity: 0.6,
-    strokeWeight: 0,
-    rotation: 0,
-    scale: 0.08,
-  };
-  iconParking: google.maps.Symbol = {
-    path: Icons.parkingIcon,
-    strokeColor: 'black',
-    fillOpacity: 0.6,
-    strokeWeight: 0,
-    rotation: 0,
-    scale: 0.6,
-  };
-  iconPoi: google.maps.Symbol = {
-    path: Icons.poiIcon,
-    strokeColor: 'black',
-    fillOpacity: 0.6,
-    strokeWeight: 0,
-    rotation: 0,
-    scale: 0.6,
-  };
-
   constructor(
     private mapService: MapService,
     private infoWindowService: InfoWindowService,
     private markersService: MarkersService
   ) {}
-
+  iconVehicle?: google.maps.Symbol;
+  iconParking?: google.maps.Symbol;
+  iconPoi?: google.maps.Symbol;
   ngOnInit(): void {
-    // console.log('marker init');
-    // this.map = this.mapService.getMap();
-    // // this.createMarker(this.position);
-    // const marker = new google.maps.Marker({
-    //   position: this._position,
-    // });
-    // this._assertInitialized();
-    // console.log(this.map);
-    // marker.setMap(this.map);
+    this.iconVehicle = {
+      path: Icons.vehicleIcon,
+      fillColor:
+        this._object !== undefined
+          ? 'type' in this._object
+            ? 'green'
+            : 'red'
+          : 'yellow',
+      fillOpacity: 0.6,
+      strokeWeight: 0,
+      rotation: 0,
+      scale: 0.08,
+    };
+    this.iconParking = {
+      path: Icons.parkingIcon,
+      strokeColor: 'black',
+      fillOpacity: 0.6,
+      strokeWeight: 0,
+      rotation: 0,
+      scale: 0.6,
+    };
+    this.iconPoi = {
+      path: Icons.poiIcon,
+      strokeColor: 'black',
+      fillOpacity: 0.6,
+      strokeWeight: 0,
+      rotation: 0,
+      scale: 0.6,
+    };
     this._infoWindow = this.infoWindowService.createInfoWindow();
     this.mapService.createMap().then((data) => {
       this.map = data;
-      // const marker = new google.maps.Marker({
-      //   position: this._position,
-      // });
-      // if (this.map) {
-      //   marker.setMap(this.map);
-      // }
-      // this.createMarker(this._position);
       this.createMarker(this._object?.location!);
       this.createInfoWindow(this._object!);
     });
   }
-
-  // createMarker(obj: Vehicle | Parking, icon?: any): google.maps.Marker {
-  //   const marker = new google.maps.Marker({
-  //     position: new google.maps.LatLng(
-  //       obj.location.latitude,
-  //       obj.location.longitude
-  //     ),
-  //     map: this.map,
-  //     icon: icon,
-  //   });
-
-  //   return marker;
-  // }
-
-  // createMarker(
-  //   position: google.maps.LatLng | google.maps.LatLngLiteral | undefined,
-  //   icon?: string | google.maps.Icon | google.maps.Symbol | null | undefined
-  // ) {
-  //   this.marker = new google.maps.Marker({
-  //     position: position,
-  //     icon: icon,
-  //     map: this.map,
-  //   });
-  // }
 
   createMarker(position: Location) {
     this.marker = new google.maps.Marker({
@@ -155,6 +115,7 @@ export class MarkerComponent implements OnInit {
           : null
         : null,
       map: this.map,
+      title: this._object?.discriminator,
     });
     this.markersService.addMarker(this.marker);
   }
@@ -201,85 +162,4 @@ export class MarkerComponent implements OnInit {
       }
     });
   }
-
-  // setVehicleMarker(vehicle: Vehicle) {
-  //   const infoWindow = new google.maps.InfoWindow();
-  //   const isAvailable = vehicle.status === 'AVAILABLE';
-  //   const infoContent = `
-  //     <div class="vehicle_bubble">
-  //       <h4 class="has-text-centered">${vehicle.type}</h4>
-  //       <p>Plates number: ${vehicle.platesNumber}</p>
-  //       <p>Car color: ${vehicle.color}</p>
-  //       <p>Range: ${vehicle.rangeKm}</p>
-  //       <p style="color: ${isAvailable ? 'green' : 'red'}">Availability: ${
-  //     isAvailable ? 'yes' : 'no'
-  //   }</p>
-  //     </div>
-  //   `;
-
-  //   const iconVehicle = {
-  //     path: Icons.vehicleIcon,
-  //     fillColor: isAvailable ? 'green' : 'red',
-  //     fillOpacity: 0.6,
-  //     strokeWeight: 0,
-  //     rotation: 0,
-  //     scale: 0.08,
-  //     anchor: new google.maps.Point(15, 30),
-  //   };
-
-  //   // const marker = this.createMarker(vehicle, iconVehicle);
-
-  //     this.marker = new google.maps.Marker({
-  //       position: new google.maps.LatLng(position.latitude, position.longitude),
-  //       icon: iconVehicle,
-  //       map: this.map,
-  //     });
-
-  //   marker.addListener('click', () => {
-  //     // infoWindow.close();
-  //     infoWindow.setContent(infoContent);
-  //     infoWindow.open(marker.getMap(), marker);
-  //   });
-
-  //   this.vehicleMarkers.push(marker);
-
-  //   return infoWindow;
-  //   // return marker;
-  // }
-  // setParkingMarker(parking: Parking) {
-  //   const infoWindow = new google.maps.InfoWindow();
-  //   const infoContent = `
-  //     <div class="parking_bubble">
-  //       <h4 class="has-text-centered">Parking: ${parking.name}</h4>
-  //     </div>
-  //   `;
-
-  //     const iconParking = {
-  //       path: Icons.parkingIcon,
-  //       color: 'black',
-  //       fillOpacity: 0.6,
-  //       strokeWeight: 0,
-  //       rotation: 0,
-  //       scale: 0.6,
-  //       // anchor: new google.maps.Point(15, 30),
-  //     };
-
-  //     const marker = this.createMarker(parking, iconParking);
-
-  //     marker.addListener('click', () => {
-  //       // infoWindow.close();
-  //       infoWindow.setContent(infoContent);
-  //       infoWindow.open(marker.getMap(), marker);
-  //     });
-
-  //     this.parkingMarkers.push(marker);
-
-  //     return infoWindow;
-  //   }
-
-  //   clusterMarkers(markers: google.maps.Marker[]) {
-  //     const map = this.map;
-  //     const markerCluster = new MarkerClusterer({ map, markers });
-  //   }
-  // }
 }

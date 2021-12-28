@@ -215,7 +215,7 @@
 
   border-radius: 100%;
 }
-
+/*
 #slider__button1 {
   position: absolute;
   top: 50%;
@@ -228,23 +228,70 @@
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
-}
+} */
 
 .filter_menu__slider_text {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 80%;
 }
 
 .filter_menu__slider_text > h6 {
+  font-size: 0.7rem;
   width: 50px;
   text-align: center;
+}
+
+.filter_menu__slider_value {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter_menu__slider_value span {
+  position: absolute;
+  height: 29px;
+  width: 29px;
+  /* color: white;
+  font-size: large; */
+  /* font-weight: 500; */
+  /* top: -35px; */
+  /* transform: translateX(-50%) scale(1); */
+  transform-origin: bottom;
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 5px;
+  top: 5px;
+  left: 0;
+  /* line-height: 55px; */
+  z-index: 1;
+}
+.filter_menu__slider_value span.show {
+  transform: translateX(-50%) scale(1);
+}
+.filter_menu__slider_value span::after {
+  position: absolute;
+  content: "";
+  height: 29px;
+  width: 29px;
+  left: 50%;
+  background: rgba(149, 156, 153, 0.39);
+  transform: translateX(-50%) rotateZ(45deg);
+  /* line-height: 55px; */
+  z-index: -1;
+  border-radius: 0 50% 50% 50%;
+  border: 1px solid white;
+  bottom: -4px;
 }
 
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;
-  background: transparent;
+  /* background: transparent; */
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -262,4 +309,19 @@ input[type="range"]::-ms-track {
   background: transparent;
   border-color: transparent;
   color: transparent;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  cursor: pointer;
+
+  width: 27px;
+  height: 27px;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  box-sizing: border-box;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.25),
+    inset 0px 0px 4px 1px rgba(0, 0, 0, 0.25);
+
+  border-radius: 100%;
 }

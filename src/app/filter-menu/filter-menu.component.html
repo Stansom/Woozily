@@ -24,19 +24,26 @@
           <div class="filter_menu__slider">
             <!-- <div "></div> -->
             <input
+              #inputRef
               class="slider__box"
               type="range"
               name="charge_selector"
               id="charge_selector"
               max="99"
               min="0"
+              [(ngModel)]="chargingValue"
+              (mousemove)="handleValueChange(inputSpan)"
               aria-label="input slider for charging value"
             />
-            <div class="slider__button" id="slider__button1"></div>
+            <div class="filter_menu__slider_value">
+              <span #inputSpan>
+                {{ chargingValue }}
+              </span>
+            </div>
           </div>
           <div class="filter_menu__slider_text">
-            <h3>0%</h3>
-            <h3>100%</h3>
+            <h6>0%</h6>
+            <h6>100%</h6>
           </div>
         </div>
       </div>

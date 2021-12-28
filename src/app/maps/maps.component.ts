@@ -15,6 +15,7 @@ import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { MarkerComponent } from '../marker/marker.component';
 import { MarkersService } from '../services/markers.service';
 import { LoggerService } from '../services/logger.service';
+import { ClusterService } from '../services/cluster.service';
 
 @Component({
   selector: 'app-maps',
@@ -54,41 +55,42 @@ export class MapsComponent implements OnInit {
   // parkingMarkers: google.maps.Marker[] = [];
 
   allMarkers: google.maps.Marker[] = [];
-  markerClusterer?: MarkerClusterer;
 
   constructor(
     private dataFetchingService: DataFetchingService,
     private mapService: MapService,
     private markersService: MarkersService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private markerClusterer: ClusterService
   ) {}
 
   ngOnInit(): void {
     this.mapService.createMap().then(() => {
       this.setLocations();
       this.map = this.mapService.getMap();
-
-      if (!this.markerClusterer) {
-        this.logger.log('init clusters');
-        this.markerClusterer = new MarkerClusterer({
-          map: this.map,
-          // markers: this.allMarkers,
-        });
-      }
+      this.markerClusterer.initClusters();
     });
   }
 
   ngAfterViewChecked(): void {
-    if (this.allMarkers.length > 0) {
-      return;
+    if (this.allMarkers.length === 0) {
+      this.allMarkers = this.markersService.getMarkers();
     }
-    this.allMarkers = this.markersService.getMarkers();
-    this.makeCluster();
-  }
 
-  makeCluster(): void {
-    if (this.map) {
-      this.markerClusterer?.addMarkers(this.allMarkers);
+    // do {
+    //   console.log('making clusterer');
+    // } while (this.markerClusterer.isClustererReady() === false);
+    if (this.allMarkers.length > 0) {
+      // console.log('making clusterer');
+      // setTimeout(() => {
+      //   console.log('making clusterer');
+      //   this.markerClusterer.makeCluster();
+      // }, 1000);
+      //   this.markerClusterer.makeCluster();
+    }
+
+    if (this.markerClusterer) {
+      // console.log('making clusterer');
     }
   }
 
@@ -109,17 +111,26 @@ export class MapsComponent implements OnInit {
 
   handleFilters(event: string) {
     if (event.length > 0) {
-      const tempVehicles = this.vehicles;
-      const tempParkings = this.parkings;
-      const tempPois = this.pois;
-
+      const tempVehicles = [...this.vehicles];
+      const tempParkings = [...this.parkings];
+      const tempPois = [...this.pois];
       switch (event) {
         case 'all':
+          this.markersService.hideExcept('');
+          this.markerClusterer.rerenderCluster();
           break;
         case 'vehicles':
-          
+          this.markersService.hideExcept('vehicle');
+          this.markerClusterer.rerenderCluster();
           break;
-
+        case 'parking':
+          this.markersService.hideExcept('parking');
+          this.markerClusterer.rerenderCluster();
+          break;
+        case 'info':
+          this.markersService.hideExcept('poi');
+          this.markerClusterer.rerenderCluster();
+          break;
         default:
           this.logger.log('no event to handle');
       }
