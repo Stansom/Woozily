@@ -1,20 +1,17 @@
-export interface Address {
+interface Address {
   street: string;
   house: string;
   city: string;
 }
-
-export interface Location {
+interface Location {
   latitude: number;
   longitude: number;
 }
-
-export interface Color {
+interface Color {
   rgb: string;
   alpha: number;
 }
-
-export interface Picture {
+interface Picture {
   contentType?: string;
   extension?: string;
   id: string;
@@ -43,11 +40,6 @@ export interface Vehicle {
   status: string;
   type: string;
 }
-
-export interface Vehicles {
-  objects: Vehicle[];
-}
-
 export interface Parking {
   discriminator: string;
   address: Address;
@@ -62,11 +54,6 @@ export interface Parking {
   location: Location;
   metadata?: string;
 }
-
-export interface Parkings {
-  objects: Parking[];
-}
-
 export interface Poi {
   discriminator: string;
   id: string;
@@ -78,10 +65,6 @@ export interface Poi {
   category: string;
   picture?: string;
   color: Color;
-}
-
-export interface Pois {
-  objects: Poi[];
 }
 
 export enum ApiOptions {

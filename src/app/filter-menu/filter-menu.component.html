@@ -1,20 +1,32 @@
-<div class="wrapper">
+<div class="wrapper" [class.blurred]="isLoading">
   <div class="filter_menu" [class.invisible]="!isVisible">
     <div class="filter_menu__box">
       <div class="filter_menu__header_box">
         <h4 class="has-text-centered">FILTER</h4>
       </div>
       <div class="filter_menu__items">
+        <!-- All markers filters list -->
         <ul class="filter_menu__objects_list">
-          <li (click)="objectsFilter = 'all'">ALL</li>
-          <li (click)="objectsFilter = 'vehicles'">VEHICLES</li>
-          <li (click)="objectsFilter = 'parking'">PARKINGS</li>
-          <li (click)="objectsFilter = 'info'">INFO</li>
+          <li (click)="objectsFilter = 'all'; handleObjectsClicks()">ALL</li>
+          <li (click)="objectsFilter = 'vehicles'; handleObjectsClicks()">
+            VEHICLES
+          </li>
+          <li (click)="objectsFilter = 'parking'; handleObjectsClicks()">
+            PARKINGS
+          </li>
+          <li (click)="objectsFilter = 'info'; handleObjectsClicks()">INFO</li>
         </ul>
+        <!-- End of All markers filters list -->
+
+        <!-- Vehicle filters menu -->
         <ul *ngIf="objectsFilter === 'vehicles'" class="filter_menu__filters">
-          <li (click)="filter = 'all'">all</li>
-          <li (click)="filter = 'availability'">available</li>
-          <li (click)="filter = 'charge'">charging</li>
+          <li (click)="filter = 'all'; handleVehicleFilterClicks()">all</li>
+          <li (click)="filter = 'availability'; handleVehicleFilterClicks()">
+            available
+          </li>
+          <li (click)="filter = 'charge'; handleVehicleFilterClicks()">
+            charging
+          </li>
         </ul>
         <div
           *ngIf="filter === 'charge' && objectsFilter === 'vehicles'"
@@ -22,7 +34,6 @@
         >
           <label for="charge_selector">sort by minimum charging: </label>
           <div class="filter_menu__slider">
-            <!-- <div "></div> -->
             <input
               #inputRef
               class="slider__box"
@@ -32,7 +43,7 @@
               max="99"
               min="0"
               [(ngModel)]="chargingValue"
-              (mousemove)="handleValueChange(inputSpan)"
+              (change)="handleValueChange(inputSpan)"
               aria-label="input slider for charging value"
             />
             <div class="filter_menu__slider_value">
@@ -46,6 +57,21 @@
             <h6>100%</h6>
           </div>
         </div>
+        <!-- End of Vehicle filters menu -->
+
+        <!-- Parkings filters -->
+        <div *ngIf="objectsFilter === 'parking'" class="filter_menu__parkings">
+          <ul class="filter_menu__filters">
+            <li (click)="parkings = 'all'; handleParkingFilter()">All</li>
+            <li (click)="parkings = 'charger'; handleParkingFilter()">
+              With charger
+            </li>
+            <li (click)="parkings = 'available'; handleParkingFilter()">
+              Available
+            </li>
+          </ul>
+        </div>
+        <!-- End of Parkings filters -->
       </div>
     </div>
   </div>

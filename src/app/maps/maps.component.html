@@ -1,45 +1,11 @@
 <div class="wrapper">
+  <div *ngIf="filterMenu.isLoading || isLoading" class="loading">
+    <img src="/assets/images/loading.svg" />
+  </div>
   <div class="title__box">
-    <h1 class="title is-4 has-text-centered">{{ appTitle }}</h1>
+    <h1 class="title is-4 has-text-centered">{{ title }}</h1>
   </div>
   <div class="map" id="map"></div>
 
-  <!-- <app-marker
-    *ngFor="let vehicle of vehicleMarkers"
-    class="marker"
-    [position]="vehicle.position"
-    [info]="vehicle.info"
-    [icon]="vehicle.icon"
-    name="vehicle"
-  >
-  </app-marker>
-  <app-marker
-    *ngFor="let parking of parkingMarkers"
-    class="marker"
-    [position]="parking.position"
-    [info]="parking.info"
-    [icon]="parking.icon"
-    name="parking"
-  >
-  </app-marker>
-  <app-marker
-    *ngFor="let poi of poiMarkers"
-    class="marker"
-    [position]="poi.position"
-    [info]="poi.info"
-    [icon]="poi.icon"
-    name="poi"
-  >
-  </app-marker> -->
-
-  <app-filter-menu
-    #filterMenu
-    (click)="
-      handleFilters(
-        filterMenu.objectsFilter,
-        filterMenu.filter,
-        filterMenu.chargingValue
-      )
-    "
-  ></app-filter-menu>
+  <app-filter-menu #filterMenu></app-filter-menu>
 </div>

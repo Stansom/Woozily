@@ -22,33 +22,29 @@ export class ClusterService {
         map,
       });
     });
-  }
+  } //initClusters
 
   makeCluster(): void {
     if (this._map) {
       this._markerClusterer?.addMarkers(this.markerService.getMarkers());
     }
-  }
+  } //makeCluster
 
   rerenderCluster(): void {
-    // this._markerClusterer?.removeMarkers(this.markerService.getMarkers());
-    this._markerClusterer?.render();
-    // this._markerClusterer?.draw();
+    const markers = this.markerService.getMarkers();
+    const visibleMarkers = markers.filter((marker) => marker.getVisible());
+    this._markerClusterer?.clearMarkers();
 
-    // this._markerClusterer?.addMarkers(
-    //   this.markerService
-    //     .getMarkers()
-    //     .filter((marker) => marker.getVisible() === true)
-    // );
-    // this._markerClusterer?.render();
-    // this._markerClusterer?.draw();
-  }
+    visibleMarkers.length
+      ? this._markerClusterer?.addMarkers(visibleMarkers)
+      : null;
+  } //rerenderCluster
 
   getClusterer(): MarkerClusterer {
     return this._markerClusterer!;
-  }
+  } //getClusterer
 
   isClustererReady(): boolean {
     return this._markerClusterer ? true : false;
-  }
+  } //isClustererReady
 }
