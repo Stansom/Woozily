@@ -1,4 +1,6 @@
 # Woozily
+![woozily_screenshot](https://user-images.githubusercontent.com/77399308/147682962-c1302633-aec0-4f3d-8e07-e0bd4b6ac6dc.png)
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.1.2.
 
