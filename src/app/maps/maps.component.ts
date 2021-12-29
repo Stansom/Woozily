@@ -9,6 +9,7 @@ import {
   Parking,
   ObjectType,
   Poi,
+  Marker,
 } from '../types';
 import * as Icons from '../iconsFromPaths';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
@@ -25,36 +26,18 @@ import { ClusterService } from '../services/cluster.service';
 export class MapsComponent implements OnInit {
   appTitle: string = 'Wozimy';
   centerOfMap = { lat: 52.1935161702226, lng: 20.9304286193486 };
-  tempObject: Vehicle = {
-    discriminator: 'vehicle',
-    platesNumber: 'WZPV001',
-    sideNumber: 'Z3-PVAN-01',
-    color: 'White',
-    type: 'TRUCK',
-    picture: {
-      id: 'e7ace1de-ab7f-4120-922d-23441a041bd9',
-      name: 'e7ace1de-ab7f-4120-922d-23441a041bd9',
-    },
-    rangeKm: 193,
-    batteryLevelPct: 98,
-    status: 'AVAILABLE',
-    mapColor: { rgb: 'ffffff', alpha: 0.5 },
-    id: '00000000-0000-0000-0005-000000000003',
-    name: 'Enigma Python Van',
-    location: {
-      latitude: 52.1935161702226,
-      longitude: 20.9304286193486,
-    },
-  };
   map?: google.maps.Map;
   vehicles: Vehicle[] = [];
   parkings: Parking[] = [];
   pois: Poi[] = [];
   objects?: ObjectType[][] = [];
-  // vehicleMarkers: google.maps.Marker[] = [];
-  // parkingMarkers: google.maps.Marker[] = [];
+
+  vehicleMarkers: Marker[] = [];
+  parkingMarkers: Marker[] = [];
+  poiMarkers: Marker[] = [];
 
   allMarkers: google.maps.Marker[] = [];
+  cachedAllMarkers: google.maps.Marker[] = [];
 
   constructor(
     private dataFetchingService: DataFetchingService,
@@ -65,76 +48,108 @@ export class MapsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // this.mapService.createMap().then(() => {
+    //   this.markersService.fetchData().then(() => {
+    //     this.markersService.convertAllToMarkers();
+    //     [this.vehicleMarkers, this.parkingMarkers, this.poiMarkers] =
+    //       this.markersService.getConvertedMarkers();
+    //     this.allMarkers = this.markersService.getMarkers();
+
+    //     this.markerClusterer.initClusters();
+    //   });
+    // });
+
     this.mapService.createMap().then(() => {
-      this.setLocations();
-      this.map = this.mapService.getMap();
+      this.markersService.renderMarkers();
+      this.allMarkers = this.markersService.getMarkers();
+
       this.markerClusterer.initClusters();
     });
   }
 
   ngAfterViewChecked(): void {
-    if (this.allMarkers.length === 0) {
+    if (
+      this.allMarkers.length !== 0 &&
+      this.allMarkers.length !== this.cachedAllMarkers.length
+    ) {
+      console.log('no cached');
       this.allMarkers = this.markersService.getMarkers();
-    }
-
-    // do {
-    //   console.log('making clusterer');
-    // } while (this.markerClusterer.isClustererReady() === false);
-    if (this.allMarkers.length > 0) {
-      // console.log('making clusterer');
-      // setTimeout(() => {
-      //   console.log('making clusterer');
-      //   this.markerClusterer.makeCluster();
-      // }, 1000);
-      //   this.markerClusterer.makeCluster();
-    }
-
-    if (this.markerClusterer) {
-      // console.log('making clusterer');
+      this.cachedAllMarkers = this.allMarkers;
+      this.markerClusterer.makeCluster();
     }
   }
+  // cachedChargingValue?: number;
+  // handleFilters(object: string, filter?: string, charging?: number) {
+  //   if (object) {
+  //     switch (object) {
+  //       case 'all':
+  //         this.markersService.hideExcept('');
+  //         this.markerClusterer.rerenderCluster();
+  //         break;
+  //       case 'vehicles':
+  //         this.markersService.hideExcept('vehicle');
+  //         this.markersService.convertToMarkers(this.vehicles);
+  //         this.markerClusterer.rerenderCluster();
+  //         break;
+  //       case 'parking':
+  //         this.markersService.hideExcept('parking');
+  //         this.markersService.convertToMarkers(this.parkings);
+  //         this.markerClusterer.rerenderCluster();
+  //         break;
+  //       case 'info':
+  //         this.markersService.hideExcept('poi');
+  //         this.markerClusterer.rerenderCluster();
+  //         break;
+  //       default:
+  //         return;
+  //     }
+  //   }
 
-  setLocations() {
-    this.dataFetchingService.getVehicles().subscribe((data: any) => {
-      const unpackedData = data.objects;
-      this.vehicles = unpackedData;
-    });
-    this.dataFetchingService.getParkings().subscribe((data: any) => {
-      const unpackedData = data.objects;
-      this.parkings = unpackedData;
-    });
-    this.dataFetchingService.getPois().subscribe((data: any) => {
-      const unpackedData = data.objects;
-      this.pois = unpackedData;
-    });
-  }
+  //   if (filter) {
+  //     switch (filter) {
+  //       case 'charge': {
+  //         if (charging && charging !== this.cachedChargingValue) {
+  //           this.cachedChargingValue = charging;
+  //           console.log(
+  //             "we've charging so let's go",
+  //             charging,
+  //             this.cachedChargingValue
+  //           );
+  //           this.markersService.clearGoogleMarkers('vehicle');
+  //           this.markersService
+  //             .sortMarkersByCharge(charging)
+  //             .then(() => this.markerClusterer.rerenderCluster());
+  //           // this.markerClusterer.rerenderCluster();
+  //           // this.markersService.requestNewMarkers(charging).then(() => {
+  //           //   [this.vehicleMarkers, ,] =
+  //           //     this.markersService.getConvertedMarkers();
+  //           //   this.allMarkers = this.markersService.getMarkers();
+  //           //   this.markerClusterer.rerenderCluster();
+  //           //   console.log('map', this.vehicleMarkers);
+  //           // });
 
-  handleFilters(event: string) {
-    if (event.length > 0) {
-      const tempVehicles = [...this.vehicles];
-      const tempParkings = [...this.parkings];
-      const tempPois = [...this.pois];
-      switch (event) {
-        case 'all':
-          this.markersService.hideExcept('');
-          this.markerClusterer.rerenderCluster();
-          break;
-        case 'vehicles':
-          this.markersService.hideExcept('vehicle');
-          this.markerClusterer.rerenderCluster();
-          break;
-        case 'parking':
-          this.markersService.hideExcept('parking');
-          this.markerClusterer.rerenderCluster();
-          break;
-        case 'info':
-          this.markersService.hideExcept('poi');
-          this.markerClusterer.rerenderCluster();
-          break;
-        default:
-          this.logger.log('no event to handle');
-      }
-      console.log(event);
-    }
-  }
+  //           // this.dataFetchingService
+  //           //   .sortByCharging(charging)
+  //           //   .subscribe((vehicles) => {
+  //           //     this.markersService.updateData(vehicles);
+  //           //     this.markersService.convertAllToMarkers();
+  //           // this.vehicles = vehicles;
+  //           // this.markersService.changeMarkers(vehicles);
+  //           // this.markerClusterer.rerenderCluster();
+  //           // });
+  //         }
+  //         break;
+  //       }
+
+  //       case 'availability': {
+  //         this.markersService.clearGoogleMarkers('vehicle');
+  //         this.markersService.sortMarkersByAvailability();
+  //         break;
+  //       }
+
+  //       default:
+  //         return;
+  //     }
+  //   }
+  // }
 }

@@ -3,35 +3,43 @@
     <h1 class="title is-4 has-text-centered">{{ appTitle }}</h1>
   </div>
   <div class="map" id="map"></div>
-  <app-marker
-    *ngFor="let vehicle of vehicles"
+
+  <!-- <app-marker
+    *ngFor="let vehicle of vehicleMarkers"
     class="marker"
-    [object]="vehicle"
+    [position]="vehicle.position"
+    [info]="vehicle.info"
+    [icon]="vehicle.icon"
     name="vehicle"
-    #appMarkerRef
   >
   </app-marker>
-
   <app-marker
-    *ngFor="let parking of parkings"
+    *ngFor="let parking of parkingMarkers"
     class="marker"
-    [object]="parking"
+    [position]="parking.position"
+    [info]="parking.info"
+    [icon]="parking.icon"
     name="parking"
-    #appMarkerRef
   >
   </app-marker>
-
   <app-marker
-    *ngFor="let poi of pois"
+    *ngFor="let poi of poiMarkers"
     class="marker"
-    [object]="poi"
+    [position]="poi.position"
+    [info]="poi.info"
+    [icon]="poi.icon"
     name="poi"
-    #appMarkerRef
   >
-  </app-marker>
+  </app-marker> -->
 
   <app-filter-menu
     #filterMenu
-    (click)="handleFilters(filterMenu.objectsFilter)"
+    (click)="
+      handleFilters(
+        filterMenu.objectsFilter,
+        filterMenu.filter,
+        filterMenu.chargingValue
+      )
+    "
   ></app-filter-menu>
 </div>

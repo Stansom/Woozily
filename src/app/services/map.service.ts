@@ -40,7 +40,4 @@ export class MapService {
     throw Error("Map Service: Can't get a Google Map");
   }
 
-  // clearMarkers(): void {
-  //   this.map.
-  // }
 }

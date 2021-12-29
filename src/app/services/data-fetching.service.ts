@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
-import { catchError, map, retry, tap } from 'rxjs/operators';
+import { catchError, delay, map, retry, tap } from 'rxjs/operators';
 import {
   Vehicle,
   ApiOptions,
@@ -43,16 +43,9 @@ export class DataFetchingService {
     };
   }
 
-  // fetchData<T>(endPoint: string) {
-  //   const fullUrl = `${this.url}${endPoint}`;
-  //   return this.http.get<T>(fullUrl).pipe(
-  //     tap((_) => console.log(`fetching API ${endPoint} data `)),
-  //     catchError(this.handleError('fetching from API', []))
-  //   );
-  // }
-
   fetchData<T>(endPoint: string): Observable<T[]> {
     return this.http.get<T[]>(`${this.url}${endPoint}`).pipe(
+      map((data: any) => data.objects),
       tap((_) => console.log(`fetching ${endPoint} data from API`)),
       catchError((error) => {
         console.error(`Error while fetching ${endPoint} data from API`, error);
@@ -82,57 +75,10 @@ export class DataFetchingService {
     }
   }
 
-  // fetchData() {
-  //   for (let option in ApiOptions) {
-  //     this.http.get(`${this.url}${option}`).pipe(
-  //       tap((data: any) => {
-  //         console.log(`fetching ${option} data from API`);
-  //         switch (option) {
-  //           case 'VEHICLE':
-  //             this.vehicles = data.objects as Vehicle[];
-  //             this.mapObjects.push(this.vehicles);
-  //             break;
-  //           case 'PARKING':
-  //             this.parkings = data.objects as Parking[];
-  //             this.mapObjects.push(this.parkings);
-  //             break;
-  //           case 'POI':
-  //             this.pois = data.objects as Poi[];
-  //             this.mapObjects.push(this.pois);
-  //             break;
-  //           default:
-  //             console.error(`Can't get data`);
-  //         }
-  //       }),
-  //       catchError((error) => {
-  //         console.error(`Error while fetching ${option} data from API`, error);
-  //         throw Error("Can't get data from API");
-  //       })
-  //     );
-  //   }
-  // }
-
-  // getData(type: string): Vehicle[] | Parking[] | Poi[] | null {
-  //   switch (type) {
-  //     case 'vehicle':
-  //       return this.vehicles as Vehicle[];
-  //     case 'parking':
-  //       return this.parkings as Parking[];
-  //     case 'poi':
-  //       return this.pois as Poi[];
-  //     default:
-  //       return null;
-  //   }
-  // }
-
-  // getData(): ObjectType[][] {
-  //   this.fetchData();
-  //   return this.mapObjects;
-  // }
-
   getVehicles(): Observable<Vehicle[]> {
     return this.http.get<Vehicle[]>(`${this.url}${ApiOptions.VEHICLE}`).pipe(
-      tap((_) => console.log('fetching data vehicles  from API')),
+      map((res: any) => res.objects),
+      tap(() => console.log('fetching vehicles data from API')),
       catchError((error) => {
         console.error('Error while fetching vehicles data from API', error);
         throw Error("Can't get data from API");
@@ -142,6 +88,7 @@ export class DataFetchingService {
 
   getParkings(): Observable<Parking[]> {
     return this.http.get<Parking[]>(`${this.url}${ApiOptions.PARKING}`).pipe(
+      map((res: any) => res.objects),
       tap((_) => console.log('fetching data parkings from API')),
       catchError((error) => {
         console.error('Error while fetching parkings data from API', error);
@@ -152,6 +99,7 @@ export class DataFetchingService {
 
   getPois(): Observable<Poi[]> {
     return this.http.get<Poi[]>(`${this.url}${ApiOptions.POI}`).pipe(
+      map((res: any) => res.objects),
       tap((_) => console.log('fetching data pois from API')),
       catchError((error) => {
         console.error('Error while fetching pois data from API', error);
@@ -160,11 +108,30 @@ export class DataFetchingService {
     );
   }
 
-  sortByRange(range: number) {
+  sortByCharging(charge: number) {
     return this.http.get<Vehicle[]>(`${this.url}${ApiOptions.VEHICLE}`).pipe(
-      // tap((_) => console.log('fetching data vehicles from API')),
+      delay(100),
+      map((res: any) => res.objects),
+      map((vehicle: Vehicle[]) =>
+        vehicle.filter((item) => item.batteryLevelPct > charge)
+      ),
+      tap((p) => console.log('fetching charging data from API', p)),
       catchError((error) => {
-        console.error('Error while sorting vehicles by range', error);
+        console.error('Error while sorting vehicles by charging', error);
+        throw Error("Can't get data from API");
+      })
+    );
+  }
+  sortByAvailability() {
+    return this.http.get<Vehicle[]>(`${this.url}${ApiOptions.VEHICLE}`).pipe(
+      delay(100),
+      map((res: any) => res.objects),
+      map((vehicle: Vehicle[]) =>
+        vehicle.filter((item) => item.status === 'AVAILABLE')
+      ),
+      tap((p) => console.log('fetching available vehicles from API', p)),
+      catchError((error) => {
+        console.error('Error while sorting vehicles by availability', error);
         throw Error("Can't get data from API");
       })
     );

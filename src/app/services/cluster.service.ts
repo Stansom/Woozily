@@ -31,8 +31,8 @@ export class ClusterService {
   }
 
   rerenderCluster(): void {
-    this._markerClusterer?.removeMarkers(this.markerService.getMarkers());
-    // this._markerClusterer?.render();
+    // this._markerClusterer?.removeMarkers(this.markerService.getMarkers());
+    this._markerClusterer?.render();
     // this._markerClusterer?.draw();
 
     // this._markerClusterer?.addMarkers(

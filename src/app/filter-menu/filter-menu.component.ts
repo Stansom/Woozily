@@ -35,6 +35,6 @@ export class FilterMenuComponent implements OnInit {
     }
     this.cachedNumber = this.chargingValue;
     bubble.style.left = `${this.cachedNumber}%`;
-    console.log(this.chargingValue);
+    // console.log(this.chargingValue);
   }
 }

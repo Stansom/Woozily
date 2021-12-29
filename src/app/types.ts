@@ -24,7 +24,7 @@ export interface Picture {
 export interface Vehicle {
   address?: string;
   batteryLevelPct: number;
-  color: string;
+  color: Color | string;
   description?: string;
   discriminator: string;
   id: string;
@@ -92,3 +92,11 @@ export enum ApiOptions {
 
 export type ObjectNames = 'vehicle' | 'parking' | 'poi';
 export type ObjectType = Vehicle | Parking | Poi;
+
+export interface Marker {
+  position: google.maps.LatLng | google.maps.LatLngLiteral;
+  info: string;
+  icon: google.maps.Symbol | null;
+  batteryLevelPct: number;
+  title: string;
+}
