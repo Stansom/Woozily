@@ -10,7 +10,6 @@ import { createIcon, createInfoBalloon } from '../helpers';
   providedIn: 'root',
 })
 export class MarkersService {
-  private _name = 'Markers Service:';
   private _markers: google.maps.Marker[] = [];
   private _cachedMarkers: google.maps.Marker[] = [];
   private _infoWindow?: google.maps.InfoWindow;

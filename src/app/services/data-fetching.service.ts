@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, delay, map, tap } from 'rxjs/operators';
 import { Vehicle, ApiOptions, Parking, Poi } from '../types';
 
@@ -20,11 +20,6 @@ export class DataFetchingService {
     }),
   };
   private url = 'https://dev.vozilla.pl/api-client-portal/map?objectType=';
-  vehicles?: Vehicle[];
-  parkings?: Parking[];
-  pois?: Poi[];
-
-  mapObjects: (Vehicle[] | Parking[] | Poi[])[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -38,27 +33,6 @@ export class DataFetchingService {
       })
     );
   } //fetchData
-
-  getData() {
-    for (let option in ApiOptions) {
-      this.fetchData(option).subscribe((data: any) => {
-        const unpacked = data.objects;
-        switch (option) {
-          case 'VEHICLE':
-            this.vehicles = unpacked as Vehicle[];
-            break;
-          case 'PARKING':
-            this.parkings = unpacked as Parking[];
-            break;
-          case 'POI':
-            this.pois = unpacked as Poi[];
-            break;
-          default:
-            console.error(`Can't get data`);
-        }
-      });
-    }
-  } //getData
 
   getVehicles(): Observable<Vehicle[]> {
     return this.http.get<Vehicle[]>(`${this.url}${ApiOptions.VEHICLE}`).pipe(

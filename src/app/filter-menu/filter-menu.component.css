@@ -13,6 +13,9 @@
   font-family: "Orbitron", sans-serif;
   transition: all 0.2s ease-in-out;
 }
+.wrapper.hidden {
+  height: 50px;
+}
 .filter_menu {
   display: flex;
   flex-direction: column;
@@ -43,6 +46,7 @@
 .invisible {
   opacity: 0;
   height: 0;
+  visibility: hidden;
 }
 .filter_menu__open_button {
   display: flex;

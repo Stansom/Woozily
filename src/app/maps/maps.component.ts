@@ -11,17 +11,7 @@ import { ClusterService } from '../services/cluster.service';
 })
 export class MapsComponent implements OnInit {
   @Input() title: string = '';
-  centerOfMap = { lat: 52.1935161702226, lng: 20.9304286193486 };
-  map?: google.maps.Map;
-  vehicles: Vehicle[] = [];
-  parkings: Parking[] = [];
-  pois: Poi[] = [];
-  objects?: ObjectType[][] = [];
   isLoading: boolean = false;
-
-  vehicleMarkers: Marker[] = [];
-  parkingMarkers: Marker[] = [];
-  poiMarkers: Marker[] = [];
 
   allMarkers: google.maps.Marker[] = [];
   cachedAllMarkers: google.maps.Marker[] = [];

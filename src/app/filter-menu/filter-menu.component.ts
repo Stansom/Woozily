@@ -17,8 +17,6 @@ export class FilterMenuComponent implements OnInit {
   filter: 'all' | 'charge' | 'availability' = 'all';
   parkings: 'all' | 'charger' | 'available' = 'all';
 
-  @Output() allObjects = new EventEmitter();
-
   constructor(
     private markersService: MarkersService,
     private clustererService: ClusterService
