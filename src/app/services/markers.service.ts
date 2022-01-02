@@ -2,14 +2,7 @@ import { Injectable } from '@angular/core';
 import { Marker, Parking, Poi, Vehicle } from '../types';
 import { DataFetchingService } from './data-fetching.service';
 import { MapService } from './map.service';
-import {
-  distinctUntilChanged,
-  lastValueFrom,
-  map,
-  Observable,
-  Subject,
-  tap,
-} from 'rxjs';
+import { lastValueFrom, Observable, Subject } from 'rxjs';
 import { InfoWindowService } from './info-window.service';
 import { createIcon, createInfoBalloon } from '../helpers';
 
@@ -28,9 +21,6 @@ export class MarkersService {
   parkings: Parking[] = [];
   pois: Poi[] = [];
 
-  parkings$?: Observable<Parking[]>;
-  searchParkings = new Subject<Parking[]>();
-
   constructor(
     private mapService: MapService,
     private dataFetchingService: DataFetchingService,
@@ -44,7 +34,6 @@ export class MarkersService {
   async fetchData() {
     const vehicles$ = this.dataFetchingService.getVehicles();
     const parkings$ = this.dataFetchingService.getParkings();
-    this.parkings$ = parkings$;
     const pois$ = this.dataFetchingService.getPois();
     this.vehicles = await lastValueFrom(vehicles$);
     this.parkings = await lastValueFrom(parkings$);
@@ -213,7 +202,6 @@ export class MarkersService {
     parkings$.subscribe((data) => {
       this.updateParkingMarkers(data);
     });
-    console.log('by aval', lastValueFrom(parkings$));
     return await lastValueFrom(parkings$);
   } //sortParkingsByAvailability
 
@@ -222,7 +210,6 @@ export class MarkersService {
     parkings$.subscribe((data) => {
       this.updateParkingMarkers(data);
     });
-    console.log('by charging', lastValueFrom(parkings$));
     return await lastValueFrom(parkings$);
   } //sortParkingsByCharger
 }
