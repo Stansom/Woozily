@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ClusterService } from '../services/cluster.service';
 import { MarkersService } from '../services/markers.service';
 

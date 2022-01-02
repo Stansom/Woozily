@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Loader } from '@googlemaps/js-api-loader';
+import { environment } from '../../environments/environment';
 
-const API_KEY = 'AIzaSyAts9Xbep-5hDLqzkNe8hKCEJANLX47E8c';
 const CENTER = { lat: 51.1079, lng: 17.0385 };
 const ZOOM = 12;
 const INJECT_ID = 'map';
@@ -16,7 +16,7 @@ export class MapService {
   async createMap() {
     if (!this.map) {
       const loader = new Loader({
-        apiKey: API_KEY,
+        apiKey: environment.googleApiKey,
       });
       await loader.load().then(() => {
         this.map = new google.maps.Map(

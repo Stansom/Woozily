@@ -16,7 +16,7 @@
 .wrapper.hidden {
   height: 50px;
 }
-@media (orientation: landscape) {
+@media (max-width: 1025px) and (orientation: landscape) {
   .wrapper {
     display: flex;
     flex-direction: column;

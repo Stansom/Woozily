@@ -2,7 +2,14 @@ import { Injectable } from '@angular/core';
 import { Marker, Parking, Poi, Vehicle } from '../types';
 import { DataFetchingService } from './data-fetching.service';
 import { MapService } from './map.service';
-import { lastValueFrom } from 'rxjs';
+import {
+  distinctUntilChanged,
+  lastValueFrom,
+  map,
+  Observable,
+  Subject,
+  tap,
+} from 'rxjs';
 import { InfoWindowService } from './info-window.service';
 import { createIcon, createInfoBalloon } from '../helpers';
 
@@ -21,6 +28,9 @@ export class MarkersService {
   parkings: Parking[] = [];
   pois: Poi[] = [];
 
+  parkings$?: Observable<Parking[]>;
+  searchParkings = new Subject<Parking[]>();
+
   constructor(
     private mapService: MapService,
     private dataFetchingService: DataFetchingService,
@@ -34,6 +44,7 @@ export class MarkersService {
   async fetchData() {
     const vehicles$ = this.dataFetchingService.getVehicles();
     const parkings$ = this.dataFetchingService.getParkings();
+    this.parkings$ = parkings$;
     const pois$ = this.dataFetchingService.getPois();
     this.vehicles = await lastValueFrom(vehicles$);
     this.parkings = await lastValueFrom(parkings$);
@@ -81,8 +92,8 @@ export class MarkersService {
     return this._markers;
   } //getMarkers
 
-  convertToMarkers(object: Vehicle[] | Parking[] | Poi[]): Marker[] | null {
-    if (!object) return null;
+  convertToMarkers(object: Vehicle[] | Parking[] | Poi[]): Marker[] {
+    if (!object) return [];
     let tempArray: Marker[] = [];
     object.forEach(
       (item) =>
@@ -124,7 +135,6 @@ export class MarkersService {
   } //getConvertedMarkers
 
   hideExcept(title: string): void {
-    const map = this.mapService.getMap();
     const filtered = this._markers.filter((marker) => {
       return marker.getTitle() !== title;
     });
@@ -140,27 +150,52 @@ export class MarkersService {
     filtered.forEach((marker) => marker.setVisible(false));
   } //hideExcept
 
+  updateVehicleMarkers(data: Vehicle[]) {
+    const newMarkers = this._markers.filter(
+      (marker) => marker.getTitle() !== 'vehicle'
+    );
+    this._markers.forEach((marker) => marker.setVisible(false));
+    this._markers = newMarkers;
+
+    this.vehicles = data;
+    this.vehicleMarkers = this.convertToMarkers(data) as Marker[];
+    this.vehicleMarkers.forEach((marker) => {
+      this.createGoogleMarker(marker);
+    });
+    const visibleMarkers = this._markers.filter(
+      (marker) => marker.getTitle() === 'vehicle'
+    );
+
+    visibleMarkers.length
+      ? visibleMarkers.forEach((marker) => marker.setVisible(true))
+      : this._markers.forEach((marker) => marker.setVisible(false));
+  } //updateParkingMarkers
+
+  updateParkingMarkers(data: Parking[]) {
+    const newMarkers = this._markers.filter(
+      (marker) => marker.getTitle() !== 'parking'
+    );
+    this._markers.forEach((marker) => marker.setVisible(false));
+    this._markers = newMarkers;
+    // this.hideExcept('parking');
+
+    this.parkings = data;
+    this.parkingMarkers = this.convertToMarkers(data) as Marker[];
+    this.parkingMarkers.forEach((marker) => {
+      this.createGoogleMarker(marker);
+    });
+    const visibleMarkers = this._markers.filter(
+      (marker) => marker.getTitle() === 'parking'
+    );
+    visibleMarkers.length
+      ? visibleMarkers.forEach((marker) => marker.setVisible(true))
+      : this._markers.forEach((marker) => marker.setVisible(false));
+  } //updateParkingMarkers
+
   async sortMarkersByCharge(charging: number) {
     const vehicles$ = this.dataFetchingService.sortByCharging(charging);
     vehicles$.subscribe((data) => {
-      const newMarkers = this._markers.filter(
-        (marker) => marker.getTitle() !== 'vehicle'
-      );
-      this._markers.forEach((marker) => marker.setVisible(false));
-      this._markers = newMarkers;
-
-      this.vehicles = data;
-      this.vehicleMarkers = this.convertToMarkers(data) as Marker[];
-      this.vehicleMarkers.forEach((marker) => {
-        this.createGoogleMarker(marker);
-      });
-      const visibleMarkers = this._markers.filter(
-        (marker) => marker.getTitle() === 'vehicle'
-      );
-
-      visibleMarkers.length
-        ? visibleMarkers.forEach((marker) => marker.setVisible(true))
-        : this._markers.forEach((marker) => marker.setVisible(false));
+      this.updateVehicleMarkers(data);
     });
     return await lastValueFrom(vehicles$);
   } //sortMarkersByCharge
@@ -168,24 +203,7 @@ export class MarkersService {
   async sortMarkersByAvailability() {
     const vehicles$ = this.dataFetchingService.sortByAvailability();
     vehicles$.subscribe((data) => {
-      const newMarkers = this._markers.filter(
-        (marker) => marker.getTitle() !== 'vehicle'
-      );
-
-      this._markers.forEach((marker) => marker.setVisible(false));
-      this._markers = newMarkers;
-
-      this.vehicles = data;
-      this.vehicleMarkers = this.convertToMarkers(data) as Marker[];
-      this.vehicleMarkers.forEach((marker) => {
-        this.createGoogleMarker(marker);
-      });
-      const visibleMarkers = this._markers.filter(
-        (marker) => marker.getTitle() === 'vehicle'
-      );
-      visibleMarkers.length
-        ? visibleMarkers.forEach((marker) => marker.setVisible(true))
-        : this._markers.forEach((marker) => marker.setVisible(false));
+      this.updateVehicleMarkers(data);
     });
     return await lastValueFrom(vehicles$);
   } //sortMarkersByAvailability
@@ -193,49 +211,18 @@ export class MarkersService {
   async sortParkingsByAvailability() {
     const parkings$ = this.dataFetchingService.sortParkingsByAvailability();
     parkings$.subscribe((data) => {
-      const newMarkers = this._markers.filter(
-        (marker) => marker.getTitle() !== 'parking'
-      );
-
-      this._markers.forEach((marker) => marker.setVisible(false));
-      this._markers = newMarkers;
-
-      this.parkings = data;
-      this.parkingMarkers = this.convertToMarkers(data) as Marker[];
-      this.parkingMarkers.forEach((marker) => {
-        this.createGoogleMarker(marker);
-      });
-      const visibleMarkers = this._markers.filter(
-        (marker) => marker.getTitle() === 'parking'
-      );
-      visibleMarkers.length
-        ? visibleMarkers.forEach((marker) => marker.setVisible(true))
-        : this._markers.forEach((marker) => marker.setVisible(false));
+      this.updateParkingMarkers(data);
     });
+    console.log('by aval', lastValueFrom(parkings$));
     return await lastValueFrom(parkings$);
   } //sortParkingsByAvailability
 
   async sortParkingsByCharger() {
     const parkings$ = this.dataFetchingService.sortParkingsByCharger();
     parkings$.subscribe((data) => {
-      const newMarkers = this._markers.filter(
-        (marker) => marker.getTitle() !== 'parking'
-      );
-      this._markers.forEach((marker) => marker.setVisible(false));
-      this._markers = newMarkers;
-
-      this.parkings = data;
-      this.parkingMarkers = this.convertToMarkers(data) as Marker[];
-      this.parkingMarkers.forEach((marker) => {
-        this.createGoogleMarker(marker);
-      });
-      const visibleMarkers = this._markers.filter(
-        (marker) => marker.getTitle() === 'parking'
-      );
-      visibleMarkers.length
-        ? visibleMarkers.forEach((marker) => marker.setVisible(true))
-        : this._markers.forEach((marker) => marker.setVisible(false));
+      this.updateParkingMarkers(data);
     });
+    console.log('by charging', lastValueFrom(parkings$));
     return await lastValueFrom(parkings$);
   } //sortParkingsByCharger
 }

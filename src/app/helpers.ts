@@ -3,8 +3,9 @@ import * as Icons from './iconsFromPaths';
 
 export function createInfoBalloon(object: Vehicle | Parking | Poi): string {
   const isAvailable =
-    'status' in object ? (object.status === 'AVAILABLE' ? true : false) : false;
+    'status' in object && (object.status === 'AVAILABLE' ? true : false);
   const infoContent =
+    //checking for vehicle
     'type' in object
       ? `
     <div class="vehicle_bubble">
@@ -18,7 +19,8 @@ export function createInfoBalloon(object: Vehicle | Parking | Poi): string {
         }</p>
     </div>
   `
-      : object.discriminator === 'poi' && 'category' in object
+      : //checking for poi
+      object.discriminator === 'poi' && 'category' in object
       ? `
       <div class="poi_bubble">
         <h4 class="title is-6 has-text-centered">${object.category}:</h5>
@@ -26,11 +28,15 @@ export function createInfoBalloon(object: Vehicle | Parking | Poi): string {
         <p>${object.description}</p>
         </div>
 `
-      : 'availableSpacesCount' in object
+      : //checking for parking
+      'availableSpacesCount' in object
       ? `
   <div class="parking_bubble">
       <h5 class="title is-6 has-text-centered">Parking:</h5>
       <h4 class="subtitle is-6 has-text-centered"> ${object.name}</h4>
+      <p class="subtitle is-6">Full address: ${object.address.street}, ${
+          object.address.house
+        }</p>
       <p class="subtitle is-6">Free parking slots: ${
         object.availableSpacesCount
       }</p>
@@ -53,12 +59,7 @@ export function createIcon(
     case 'vehicle': {
       return {
         path: Icons.vehicleIcon,
-        fillColor:
-          object !== undefined
-            ? 'type' in object
-              ? 'green'
-              : 'red'
-            : 'yellow',
+        fillColor: object && 'type' in object ? 'green' : 'red',
         fillOpacity: 0.6,
         strokeWeight: 0,
         rotation: 0,
@@ -79,9 +80,7 @@ export function createIcon(
       return {
         path: Icons.poiIcon,
         strokeColor:
-          object !== undefined && 'category' in object
-            ? object.color.rgb
-            : 'black',
+          object && 'category' in object ? object.color.rgb : 'black',
         fillOpacity: 0.6,
         strokeWeight: 0,
         rotation: 0,

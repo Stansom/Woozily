@@ -35,9 +35,7 @@ export class ClusterService {
     const visibleMarkers = markers.filter((marker) => marker.getVisible());
     this._markerClusterer?.clearMarkers();
 
-    visibleMarkers.length
-      ? this._markerClusterer?.addMarkers(visibleMarkers)
-      : null;
+    visibleMarkers.length && this._markerClusterer?.addMarkers(visibleMarkers);
   } //rerenderCluster
 
   getClusterer(): MarkerClusterer {
