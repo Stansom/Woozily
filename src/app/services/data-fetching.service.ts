@@ -63,11 +63,7 @@ export class DataFetchingService {
     return this.http
       .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
       .pipe(
-        // delay(100),
         map((res: any) => res.objects),
-        // distinctUntilChanged((prev, cur) => {
-        //   return prev.length === cur.length;
-        // }),
         map((vehicle: Vehicle[]) =>
           vehicle.filter((item) => item.batteryLevelPct > charge)
         ),
@@ -83,7 +79,6 @@ export class DataFetchingService {
     return this.http
       .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
       .pipe(
-        delay(100),
         map((res: any) => res.objects),
         map((vehicle: Vehicle[]) =>
           vehicle.filter((item) => item.status === 'AVAILABLE')
@@ -100,8 +95,6 @@ export class DataFetchingService {
     return this.http
       .get<Parking[]>(`${environment.apiUri}${ApiOptions.PARKING}`)
       .pipe(
-        // delay(100),
-
         map((res: any) => res.objects),
         map((parking: Parking[]) =>
           parking.filter((item) => item.spacesCount > 0)
