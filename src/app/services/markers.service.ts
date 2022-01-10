@@ -2,15 +2,7 @@ import { Injectable } from '@angular/core';
 import { Marker, Parking, Poi, Vehicle } from '../types';
 import { DataFetchingService } from './data-fetching.service';
 import { MapService } from './map.service';
-import {
-  debounceTime,
-  delay,
-  distinctUntilChanged,
-  lastValueFrom,
-  Observable,
-  Subject,
-  tap,
-} from 'rxjs';
+import { catchError, lastValueFrom, map, Observable, tap } from 'rxjs';
 import { InfoWindowService } from './info-window.service';
 import { createIcon, createInfoBalloon } from '../helpers';
 
@@ -29,6 +21,10 @@ export class MarkersService {
   parkings: Parking[] = [];
   pois: Poi[] = [];
 
+  parkings$?: Observable<Parking[]>;
+  pois$?: Observable<Poi[]>;
+  vehicles$?: Observable<Vehicle[]>;
+
   constructor(
     private mapService: MapService,
     private dataFetchingService: DataFetchingService,
@@ -41,26 +37,25 @@ export class MarkersService {
   } //addMarker
 
   async fetchData() {
-    const vehicles$ = this.dataFetchingService.getVehicles();
-    const parkings$ = this.dataFetchingService.getParkings();
-    const pois$ = this.dataFetchingService.getPois();
-    this.vehicles = await lastValueFrom(vehicles$);
-    this.parkings = await lastValueFrom(parkings$);
-    this.pois = await lastValueFrom(pois$);
+    this.vehicles$ = this.dataFetchingService.getVehicles();
+    this.parkings$ = this.dataFetchingService.getParkings();
+    this.pois$ = this.dataFetchingService.getPois();
+    this.vehicles = await lastValueFrom(this.vehicles$);
+    this.parkings = await lastValueFrom(this.parkings$);
+    this.pois = await lastValueFrom(this.pois$);
   } //fetchData
 
   async renderMarkers() {
-    // if (this._cachedMarkers.length === 0) {
+    this.clearAllMarkers();
+    this.setAllMarkersInvisible();
     const fetch = this.fetchData();
     fetch.then(() => {
       this.convertAllMarkers();
       this.vehicleMarkers.forEach((item) => this.createGoogleMarker(item));
       this.parkingMarkers.forEach((item) => this.createGoogleMarker(item));
       this.poiMarkers.forEach((item) => this.createGoogleMarker(item));
-      // this._cachedMarkers = this._markers;
     });
     return await fetch;
-    // }
     this._markers = this._cachedMarkers;
     this._cachedMarkers.forEach((marker) => marker.setVisible(true));
   } //renderMarkers
@@ -142,7 +137,7 @@ export class MarkersService {
     const newMarkers = this._markers.filter(
       (marker) => marker.getTitle() !== 'vehicle'
     );
-    this._markers.forEach((marker) => marker.setVisible(false));
+    this.setAllMarkersInvisible();
     this._markers = newMarkers;
 
     this.vehicles = data;
@@ -154,19 +149,17 @@ export class MarkersService {
       (marker) => marker.getTitle() === 'vehicle'
     );
 
-    visibleMarkers.length
+    visibleMarkers.length > 0
       ? visibleMarkers.forEach((marker) => marker.setVisible(true))
       : this._markers.forEach((marker) => marker.setVisible(false));
   } //updateParkingMarkers
 
   updateParkingMarkers(data: Parking[]) {
-    if (this.parkings.length === data.length) return;
     const newMarkers = this._markers.filter(
       (marker) => marker.getTitle() !== 'parking'
     );
-    this._markers.forEach((marker) => {
-      marker.setVisible(false);
-    });
+    this.setAllMarkersInvisible();
+    this.clearAllMarkers();
     this._markers = newMarkers;
 
     this.parkings = data;
@@ -179,58 +172,103 @@ export class MarkersService {
     const visibleMarkers = this._markers.filter(
       (marker) => marker.getTitle() === 'parking'
     );
-    visibleMarkers.length
+    visibleMarkers.length > 0
       ? visibleMarkers.forEach((marker) => marker.setVisible(true))
       : this._markers.forEach((marker) => marker.setVisible(false));
-
-    console.log(this.getMarkers());
   } //updateParkingMarkers
 
   async sortMarkersByCharge(charging: number) {
-    const vehicles$ = this.dataFetchingService.sortByCharging(charging);
-    vehicles$.subscribe((data) => {
-      this.updateVehicleMarkers(data);
-    });
-    return await lastValueFrom(vehicles$);
+    this.vehicles$ = this.dataFetchingService.getVehicles().pipe(
+      map((vehicle: Vehicle[]) =>
+        vehicle.filter((item) => item.batteryLevelPct > charging)
+      ),
+      // tap(() => console.log('fetching charging data from API')),
+      tap((data) => this.updateVehicleMarkers(data)),
+
+      catchError((error) => {
+        console.error('Error while sorting vehicles by charging', error);
+        throw Error("Can't get data from API");
+      })
+    );
+    const promised = await lastValueFrom(this.vehicles$);
   } //sortMarkersByCharge
 
   async sortMarkersByAvailability() {
-    const vehicles$ = this.dataFetchingService.sortByAvailability();
-    vehicles$.subscribe((data) => {
-      this.updateVehicleMarkers(data);
-    });
-    return await lastValueFrom(vehicles$);
+    this.vehicles$ = this.dataFetchingService.getVehicles().pipe(
+      map((vehicle: Vehicle[]) =>
+        vehicle.filter((item) => item.status === 'AVAILABLE')
+      ),
+      // tap(() => console.log('fetching available vehicles from API')),
+      tap((data) => this.updateVehicleMarkers(data)),
+      catchError((error) => {
+        console.error('Error while sorting vehicles by availability', error);
+        throw Error("Can't get data from API");
+      })
+    );
+
+    const promised = await lastValueFrom(this.vehicles$);
   } //sortMarkersByAvailability
 
   async sortParkingsByAvailability() {
-    const parkings$ = this.dataFetchingService.sortParkingsByAvailability();
-    parkings$.subscribe((data) => {
-      this.updateParkingMarkers(data);
-    });
-    return await lastValueFrom(parkings$);
+    this.parkings$ = this.dataFetchingService.getParkings().pipe(
+      map((parking: Parking[]) =>
+        parking.filter((item) => item.spacesCount > 0)
+      ),
+      // tap(() => console.log('fetching available parking slots from API')),
+      tap((data) => this.updateParkingMarkers(data)),
+      catchError((error) => {
+        console.error(
+          'Error while fetching parking slots by availability',
+          error
+        );
+        throw Error("Can't get data from API");
+      })
+    );
+
+    const promised = await lastValueFrom(this.parkings$);
   } //sortParkingsByAvailability
 
   async sortParkingsByCharger() {
-    const parkings$ = this.dataFetchingService.sortParkingsByCharger();
-    parkings$.subscribe((data) => {
+    this.parkings$ = this.dataFetchingService.getParkings().pipe(
+      map((parking: Parking[]) =>
+        parking.filter((item) => item.chargers.length > 0)
+      ),
+      // tap(() =>
+      //   console.log('fetching available chargers on parkings from API')
+      // ),
+      tap((data) => this.updateParkingMarkers(data)),
+      catchError((error) => {
+        console.error('Error while fetching chargers on parking slots', error);
+        throw Error("Can't get data from API");
+      })
+    );
+    this.parkings$.subscribe((data) => {
       this.updateParkingMarkers(data);
     });
-    return await lastValueFrom(parkings$);
+    const promised = await lastValueFrom(this.parkings$);
   } //sortParkingsByCharger
 
   async showAllParkings() {
-    const parkings$ = this.dataFetchingService.getParkings();
-    parkings$.subscribe((data) => {
-      this.updateParkingMarkers(data);
-    });
-    return await lastValueFrom(parkings$);
+    this.parkings$ = this.dataFetchingService
+      .getParkings()
+      .pipe(tap((data) => this.updateParkingMarkers(data)));
+    const promised = await lastValueFrom(this.parkings$);
   } //showAllParkings
 
   async showAllVehicles() {
-    const vehicles$ = this.dataFetchingService.getVehicles();
-    vehicles$.subscribe((data) => {
-      this.updateVehicleMarkers(data);
-    });
-    return await lastValueFrom(vehicles$);
+    this.vehicles$ = this.dataFetchingService
+      .getVehicles()
+      .pipe(tap((data) => this.updateVehicleMarkers(data)));
+    const promised = await lastValueFrom(this.vehicles$);
   } //showAllVehicles
+
+  setAllMarkersInvisible() {
+    this._markers.forEach((marker) => {
+      marker.setVisible(false);
+    });
+  } //setAllMarkersInvisible
+
+  clearAllMarkers() {
+    this._markers.length = 0;
+  } //clearAllMarkers
 }

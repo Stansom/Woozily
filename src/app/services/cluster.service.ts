@@ -32,28 +32,11 @@ export class ClusterService {
 
   rerenderCluster(): void {
     const markers = this.markerService.getMarkers();
-    const markerPromise = new Promise((res: any) => {
-      console.log(res);
-      return (res = this.markerService.getMarkers());
-    });
-
-    markerPromise.then((data: any) => {
-      console.log(data);
-      const visibleMarkers = data.filter((marker: google.maps.Marker) =>
-        marker.getVisible()
-      );
-      this._markerClusterer?.clearMarkers();
-      console.log(visibleMarkers);
-
-      visibleMarkers.length &&
-        this._markerClusterer?.addMarkers(visibleMarkers);
-    });
-
-    // const visibleMarkers = markers.filter((marker) => marker.getVisible());
-    // this._markerClusterer?.clearMarkers();
-    // console.log(visibleMarkers);
-
-    // visibleMarkers.length && this._markerClusterer?.addMarkers(visibleMarkers);
+    const visibleMarkers = markers.filter((marker: google.maps.Marker) =>
+      marker.getVisible()
+    );
+    this._markerClusterer?.clearMarkers();
+    visibleMarkers.length && this._markerClusterer?.addMarkers(visibleMarkers);
   } //rerenderCluster
 
   getClusterer(): MarkerClusterer | undefined {

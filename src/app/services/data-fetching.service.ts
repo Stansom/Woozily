@@ -1,13 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  catchError,
-  delay,
-  distinctUntilChanged,
-  map,
-  tap,
-} from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Vehicle, ApiOptions, Parking, Poi } from '../types';
 import { environment } from '../../environments/environment';
 
@@ -16,18 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class DataFetchingService {
   constructor(private http: HttpClient) {}
-
-  fetchData<T>(endPoint: string): Observable<T[]> {
-    return this.http.get<T[]>(`${environment.apiUri}${endPoint}`).pipe(
-      map((data: any) => data.objects),
-      // tap((_) => console.log(`fetching ${endPoint} data from API`)),
-      catchError((error) => {
-        console.error(`Error while fetching ${endPoint} data from API`, error);
-        throw Error("Can't get data from API");
-      })
-    );
-  } //fetchData
-
+  
   getVehicles(): Observable<Vehicle[]> {
     return this.http
       .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
@@ -64,77 +47,4 @@ export class DataFetchingService {
       })
     );
   } //getPois
-
-  sortByCharging(charge: number) {
-    return this.http
-      .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
-      .pipe(
-        map((res: any) => res.objects),
-        map((vehicle: Vehicle[]) =>
-          vehicle.filter((item) => item.batteryLevelPct > charge)
-        ),
-        // tap(() => console.log('fetching charging data from API')),
-        catchError((error) => {
-          console.error('Error while sorting vehicles by charging', error);
-          throw Error("Can't get data from API");
-        })
-      );
-  } //sortByCharging
-
-  sortByAvailability() {
-    return this.http
-      .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
-      .pipe(
-        delay(100),
-        map((res: any) => res.objects),
-        map((vehicle: Vehicle[]) =>
-          vehicle.filter((item) => item.status === 'AVAILABLE')
-        ),
-        // tap(() => console.log('fetching available vehicles from API')),
-        catchError((error) => {
-          console.error('Error while sorting vehicles by availability', error);
-          throw Error("Can't get data from API");
-        })
-      );
-  } //sortByAvailability
-
-  sortParkingsByAvailability() {
-    return this.http
-      .get<Parking[]>(`${environment.apiUri}${ApiOptions.PARKING}`)
-      .pipe(
-        map((res: any) => res.objects),
-        map((parking: Parking[]) =>
-          parking.filter((item) => item.spacesCount > 0)
-        ),
-        // tap(() => console.log('fetching available parking slots from API')),
-        catchError((error) => {
-          console.error(
-            'Error while fetching parking slots by availability',
-            error
-          );
-          throw Error("Can't get data from API");
-        })
-      );
-  } //sortParkingsByAvailability
-
-  sortParkingsByCharger() {
-    return this.http
-      .get<Parking[]>(`${environment.apiUri}${ApiOptions.PARKING}`)
-      .pipe(
-        map((res: any) => res.objects),
-        map((parking: Parking[]) =>
-          parking.filter((item) => item.chargers.length > 0)
-        ),
-        // tap(() =>
-        //   console.log('fetching available chargers on parkings from API')
-        // ),
-        catchError((error) => {
-          console.error(
-            'Error while fetching chargers on parking slots',
-            error
-          );
-          throw Error("Can't get data from API");
-        })
-      );
-  } //sortParkingsByCharger
 }
