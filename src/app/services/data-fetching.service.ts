@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class DataFetchingService {
   constructor(private http: HttpClient) {}
-  
+
   getVehicles(): Observable<Vehicle[]> {
     return this.http
       .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
