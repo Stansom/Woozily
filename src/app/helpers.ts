@@ -1,4 +1,4 @@
-import { Parking, Poi, Vehicle } from './types';
+import { Parking, Poi, Vehicle, isVehicle, isPoi, isParking } from './types';
 import * as Icons from './iconsFromPaths';
 
 export function createInfoBalloon(object: Vehicle | Parking | Poi): string {
@@ -6,7 +6,8 @@ export function createInfoBalloon(object: Vehicle | Parking | Poi): string {
     'status' in object && (object.status === 'AVAILABLE' ? true : false);
   const infoContent =
     //checking for vehicle
-    'type' in object
+    // 'type' in object
+    isVehicle(object)
       ? `
     <div class="vehicle_bubble">
       <h4 class="title is-6 has-text-centered">${object.type}</h4>
@@ -20,7 +21,8 @@ export function createInfoBalloon(object: Vehicle | Parking | Poi): string {
     </div>
   `
       : //checking for poi
-      object.discriminator === 'poi' && 'category' in object
+      // object.discriminator === 'poi' && 'category' in object
+      isPoi(object)
       ? `
       <div class="poi_bubble">
         <h4 class="title is-6 has-text-centered">${object.category}:</h5>
@@ -29,7 +31,8 @@ export function createInfoBalloon(object: Vehicle | Parking | Poi): string {
         </div>
 `
       : //checking for parking
-      'availableSpacesCount' in object
+      // 'availableSpacesCount' in object
+      isParking(object)
       ? `
   <div class="parking_bubble">
       <h5 class="title is-6 has-text-centered">Parking:</h5>

@@ -40,6 +40,7 @@ export interface Vehicle {
   status: string;
   type: string;
 }
+
 export interface Parking {
   discriminator: string;
   address: Address;
@@ -82,4 +83,20 @@ export interface Marker {
   icon: google.maps.Symbol | null;
   batteryLevelPct: number;
   title: string;
+}
+
+// export function isAPIType<T extends ObjectType>(object: T): object is T {
+//   return (object as T) !== undefined;
+// }
+
+export function isVehicle(object: ObjectType): object is Vehicle {
+  return 'type' in object;
+}
+
+export function isParking(object: ObjectType): object is Parking {
+  return 'availableSpacesCount' in object;
+}
+
+export function isPoi(object: ObjectType): object is Poi {
+  return 'category' in object;
 }

@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError, delay, map } from 'rxjs/operators';
+import {
+  catchError,
+  delay,
+  distinctUntilChanged,
+  map,
+  tap,
+} from 'rxjs/operators';
 import { Vehicle, ApiOptions, Parking, Poi } from '../types';
 import { environment } from '../../environments/environment';
 
@@ -40,7 +46,7 @@ export class DataFetchingService {
       .get<Parking[]>(`${environment.apiUri}${ApiOptions.PARKING}`)
       .pipe(
         map((res: any) => res.objects),
-        // tap((_) => console.log('fetching data parkings from API')),
+        tap((_) => console.log('fetching data parkings from API')),
         catchError((error) => {
           console.error('Error while fetching parkings data from API', error);
           throw Error("Can't get data from API");
@@ -63,11 +69,7 @@ export class DataFetchingService {
     return this.http
       .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
       .pipe(
-        // delay(100),
         map((res: any) => res.objects),
-        // distinctUntilChanged((prev, cur) => {
-        //   return prev.length === cur.length;
-        // }),
         map((vehicle: Vehicle[]) =>
           vehicle.filter((item) => item.batteryLevelPct > charge)
         ),
@@ -100,8 +102,6 @@ export class DataFetchingService {
     return this.http
       .get<Parking[]>(`${environment.apiUri}${ApiOptions.PARKING}`)
       .pipe(
-        // delay(100),
-
         map((res: any) => res.objects),
         map((parking: Parking[]) =>
           parking.filter((item) => item.spacesCount > 0)

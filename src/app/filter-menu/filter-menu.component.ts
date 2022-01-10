@@ -67,9 +67,8 @@ export class FilterMenuComponent implements OnInit {
       case 'all':
         this.chargingValue = 0;
         this.isLoading = true;
-        this.markersService.renderMarkers().then(() => {
+        this.markersService.showAllVehicles().then(() => {
           this.isLoading = false;
-          this.markersService.hideExcept('vehicle');
           this.clustererService.rerenderCluster();
         });
         break;
@@ -90,9 +89,9 @@ export class FilterMenuComponent implements OnInit {
   handleParkingFilter() {
     switch (this.parkings) {
       case 'all':
-        this.markersService.renderMarkers().then(() => {
+        this.isLoading = true;
+        this.markersService.showAllParkings().then(() => {
           this.isLoading = false;
-          this.markersService.hideExcept('parking');
           this.clustererService.rerenderCluster();
         });
 
