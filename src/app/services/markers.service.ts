@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Marker, Parking, Poi, Vehicle } from '../types';
+import { ApiOptions, Marker, Parking, Poi, Vehicle } from '../types';
 import { DataFetchingService } from './data-fetching.service';
 import { MapService } from './map.service';
 import { catchError, lastValueFrom, map, Observable, tap } from 'rxjs';

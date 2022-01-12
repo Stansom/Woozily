@@ -11,40 +11,31 @@ import { environment } from '../../environments/environment';
 export class DataFetchingService {
   constructor(private http: HttpClient) {}
 
-  getVehicles(): Observable<Vehicle[]> {
-    return this.http
-      .get<Vehicle[]>(`${environment.apiUri}${ApiOptions.VEHICLE}`)
-      .pipe(
-        map((res: any) => res.objects),
-        // tap(() => console.log('fetching vehicles data from API')),
-        catchError((error) => {
-          console.error('Error while fetching vehicles data from API', error);
-          throw Error("Can't get data from API");
-        })
-      );
-  } //getVehicles
+  unwrapResponse<T>(obj: any) {
+    return obj['objects'] as T[];
+  }
 
-  getParkings(): Observable<Parking[]> {
-    return this.http
-      .get<Parking[]>(`${environment.apiUri}${ApiOptions.PARKING}`)
-      .pipe(
-        map((res: any) => res.objects),
-        tap((_) => console.log('fetching data parkings from API')),
-        catchError((error) => {
-          console.error('Error while fetching parkings data from API', error);
-          throw Error("Can't get data from API");
-        })
-      );
-  } //getParkings
-
-  getPois(): Observable<Poi[]> {
-    return this.http.get<Poi[]>(`${environment.apiUri}${ApiOptions.POI}`).pipe(
-      map((res: any) => res.objects),
-      // tap((_) => console.log('fetching data pois from API')),
+  fetchData<T>(endPoint: string): Observable<T[]> {
+    return this.http.get<T[]>(`${environment.apiUri}${endPoint}`).pipe(
+      map((data) => this.unwrapResponse<T>(data)),
+      // map((data: any) => data.objects),
+      // tap((_) => console.log(`fetching ${endPoint} data from API`)),
       catchError((error) => {
-        console.error('Error while fetching pois data from API', error);
+        console.error(`Error while fetching ${endPoint} data from API`, error);
         throw Error("Can't get data from API");
       })
     );
+  } //fetchData
+
+  getVehicles(): Observable<Vehicle[]> {
+    return this.fetchData<Vehicle>(ApiOptions.VEHICLE);
+  } //getVehicles
+
+  getParkings(): Observable<Parking[]> {
+    return this.fetchData<Parking>(ApiOptions.PARKING);
+  } //getParkings
+
+  getPois(): Observable<Poi[]> {
+    return this.fetchData<Poi>(ApiOptions.POI);
   } //getPois
 }
